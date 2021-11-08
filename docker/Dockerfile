@@ -27,17 +27,19 @@ RUN --mount=type=cache,id=apt-dev,target=/var/cache/apt \
     DEBIAN_FRONTEND=noninteractive apt-get install --no-install-recommends -y \
     ca-certificates \
     g++ \
-    python3-dev \
-    python3-distutils \
-    python3-venv \
+    python3.8-dev \
+    python3.8-distutils \
+    python3.8-venv \
     openjdk-11-jre-headless \
     curl \
+    libjpeg-dev \
+    zlib1g-dev \
     && rm -rf /var/lib/apt/lists/* \
     && cd /tmp \
     && curl -O https://bootstrap.pypa.io/get-pip.py \
     && python3 get-pip.py
 
-RUN python3 -m venv /home/venv
+RUN python3.8 -m venv /home/venv
 
 ENV PATH="/home/venv/bin:$PATH"
 
@@ -61,6 +63,7 @@ RUN TORCH_VER=$(curl --silent --location https://pypi.org/pypi/torch/json | pyth
         fi \
     # Install the CPU binary
     else \
+        pip install -U cython \
         pip install --no-cache-dir torch==$TORCH_VER+cpu torchvision==$TORCH_VISION_VER+cpu -f https://download.pytorch.org/whl/torch_stable.html; \
     fi
 RUN pip install --no-cache-dir captum torchtext torchserve torch-model-archiver
@@ -73,11 +76,15 @@ ENV PYTHONUNBUFFERED TRUE
 RUN --mount=type=cache,target=/var/cache/apt \
     apt-get update && \
     DEBIAN_FRONTEND=noninteractive apt-get install --no-install-recommends -y \
-    python3 \
-    python3-distutils \
-    python3-dev \
+    python3.8 \
+    python3.8-distutils \
+    python3.8-dev \
     openjdk-11-jre-headless \
     build-essential \
+    git \
+    ffmpeg \
+    libsm6 \
+    libxext6 \
     && rm -rf /var/lib/apt/lists/* \
     && cd /tmp
 
