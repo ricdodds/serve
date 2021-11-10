@@ -46,6 +46,8 @@ ENV PATH="/home/venv/bin:$PATH"
 RUN update-alternatives --install /usr/bin/python python /usr/bin/python3 1 \
     && update-alternatives --install /usr/local/bin/pip pip /usr/local/bin/pip3 1
 
+RUN pip install -U pip && pip install --no-cache-dir -U cython
+
 # This is only useful for cuda env
 RUN export USE_CUDA=1
 
@@ -63,7 +65,6 @@ RUN TORCH_VER=$(curl --silent --location https://pypi.org/pypi/torch/json | pyth
         fi \
     # Install the CPU binary
     else \
-        pip install -U cython \
         pip install --no-cache-dir torch==$TORCH_VER+cpu torchvision==$TORCH_VISION_VER+cpu -f https://download.pytorch.org/whl/torch_stable.html; \
     fi
 RUN pip install --no-cache-dir captum torchtext torchserve torch-model-archiver
