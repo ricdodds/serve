@@ -27,22 +27,26 @@ RUN --mount=type=cache,id=apt-dev,target=/var/cache/apt \
     DEBIAN_FRONTEND=noninteractive apt-get install --no-install-recommends -y \
     ca-certificates \
     g++ \
-    python3-dev \
-    python3-distutils \
-    python3-venv \
+    python3.8-dev \
+    python3.8-distutils \
+    python3.8-venv \
     openjdk-11-jre-headless \
     curl \
+    libjpeg-dev \
+    zlib1g-dev \
     && rm -rf /var/lib/apt/lists/* \
     && cd /tmp \
     && curl -O https://bootstrap.pypa.io/get-pip.py \
     && python3 get-pip.py
 
-RUN python3 -m venv /home/venv
+RUN python3.8 -m venv /home/venv
 
 ENV PATH="/home/venv/bin:$PATH"
 
 RUN update-alternatives --install /usr/bin/python python /usr/bin/python3 1 \
     && update-alternatives --install /usr/local/bin/pip pip /usr/local/bin/pip3 1
+
+RUN pip install -U pip && pip install --no-cache-dir -U cython
 
 # This is only useful for cuda env
 RUN export USE_CUDA=1
@@ -73,11 +77,15 @@ ENV PYTHONUNBUFFERED TRUE
 RUN --mount=type=cache,target=/var/cache/apt \
     apt-get update && \
     DEBIAN_FRONTEND=noninteractive apt-get install --no-install-recommends -y \
-    python3 \
-    python3-distutils \
-    python3-dev \
+    python3.8 \
+    python3.8-distutils \
+    python3.8-dev \
     openjdk-11-jre-headless \
     build-essential \
+    git \
+    ffmpeg \
+    libsm6 \
+    libxext6 \
     && rm -rf /var/lib/apt/lists/* \
     && cd /tmp
 
